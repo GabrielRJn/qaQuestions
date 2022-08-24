@@ -1,50 +1,78 @@
 package com.example.demo.services;
 
 
-	import java.util.ArrayList;
+
+import java.util.ArrayList;  
 import java.util.List;
+import java.util.Optional;
 
-
-	import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import lombok.AllArgsConstructor;
+import com.example.demo.exception.*;
+import com.example.demo.controller.*;
+import com.example.demo.dto.*; 
+import com.example.demo.model.*;  
+import com.example.demo.repository.*;
 
-import com.example.demo.model.Books;
-	import com.example.demo.repository.BooksRepo;
 
-	@Service
-	public class BookService {
+
+@Service  
+@AllArgsConstructor
+public class BookService {
 
 		
+
+		//wiring the repo 
 		@Autowired  
-		BooksRepo booksRepository;  
-		//getting all books record by using the method findaAll() of CrudRepository  
+		BooksRepo BooksRepo;  
+		
+		
+		private ModelMapper mapper;
+		
+		//getting all Books record by using the method findAll() of CrudRepository  
 		public List<Books> getAllBooks()   
 		{  
-		List<Books> books1 = new ArrayList<Books>();  
-		booksRepository.findAll().forEach(books2 -> books1.add(books2));  
-		return books1;
+		List<Books> Books1 = new ArrayList<Books>();  
+		BooksRepo.findAll().forEach(Books2 -> Books1.add(Books2));
+		return Books1;  
+		}  
 		
-		}  
 		//getting a specific record by using the method findById() of CrudRepository  
-		public Books getBooksById(long id)   
+		public Optional<Books> getBookById(long id)   
 		{  
-		return booksRepository.findById(id).get();
+			//Books found = this.BooksRepo.findById(id).orElseThrow(BookNotFoundID::new);
+			return BooksRepo.findById(id);
 		}  
+
 		//saving a specific record by using the method save() of CrudRepository  
-		public void saveOrUpdate(Books books1)   
+		public Books saveOrUpdate(Books Books1)   
 		{  
-		booksRepository.save(books1);  
+		return BooksRepo.save(Books1);  
 		}  
+		
 		//deleting a specific record by using the method deleteById() of CrudRepository  
 		public void delete(long id)   
 		{  
-		booksRepository.deleteById(id);  
-		}  
+		BooksRepo.deleteById(id);
+		} 
+		
 		//updating a record  
-		public void update(Books books1, long bookid)   
+		public void update(Books Books1, int bookid)   
 		{  
-		booksRepository.save(books1);  
+		BooksRepo.save(Books1);
 		}  
+		
+	
+
 		
 		
 	}

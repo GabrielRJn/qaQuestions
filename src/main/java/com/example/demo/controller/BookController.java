@@ -1,64 +1,68 @@
 package com.example.demo.controller;
-
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;  
+import org.springframework.web.bind.annotation.GetMapping;  
+import org.springframework.web.bind.annotation.PathVariable;  
+import org.springframework.web.bind.annotation.PostMapping;  
+import org.springframework.web.bind.annotation.PutMapping;  
+import org.springframework.web.bind.annotation.RequestBody;  
+import org.springframework.web.bind.annotation.RestController;  
+import com.example.demo.model.Books;  
+import com.example.demo.services.BookService;  
 
-import com.example.demo.model.Books;
-import com.example.demo.services.BookService;
+//mark class as Controller  
 
-
-@RestController
+@RestController 
 public class BookController {
 
 	//auto-wire the BookService class  
 		@Autowired  
-		BookService bookService;  
+		BookService BookService;  
 		
 		@GetMapping("/")
-		public String greeting() { 
-			return "Welcome Student. Please go to \"/allBooks\" for all available Books";
-			}
+		public String greeting() { return "Welcome to the Book Shop. Please go to \"/allBooks\" for all available Books";}
 		
 		//creating a get mapping that retrieves all the Books detail from the database   
 		@GetMapping("/allBooks")  
 		private List<Books> getAllBooks()   
 		{  
-		return bookService.getAllBooks();
-		}
-		//creating a get mapping that retrieves the detail of a specific book  
-		@GetMapping("/book/{bookid}")  
-		private Books getBooks(@PathVariable("bookid") long bookid)   
-		{  
-		return bookService.getBooksById(bookid) ; 
+		return BookService.getAllBooks();  
 		}  
-		//creating a delete mapping that deletes a specified book  
-		@DeleteMapping("/book/{bookid}")  
-		private void deleteBook(@PathVariable("bookid") long bookid)   
+		
+		//creating a get mapping that retrieves the detail of a specific book  
+		@GetMapping("/books/{bookid}")  
+		private Optional<Books> getBookById(@PathVariable("bookid") int bookid)   
 		{  
-		bookService.delete(bookid);
+		return BookService.getBookById(bookid);  
+		}  
+		
+		//creating a delete mapping that deletes a specified book  
+		@DeleteMapping("/deletebook/{bookid}")  
+		private void deleteBook(@PathVariable("bookid") int bookid)   
+		{  
+		BookService.delete(bookid);  
 		}  
 		
 		//creating post mapping that post the book detail in the database  
-		@PostMapping("/postBooks")  
-		private Long saveBook(@RequestBody Books books1)   
+		@PostMapping("/saveorupdateBook")  
+		private ResponseEntity<Books> saveBook(@RequestBody Books Books1)   
 		{  
-		bookService.saveOrUpdate(books1);
-		return books1.getBookId();  
-		}   
+			return new ResponseEntity<>(this.BookService.saveOrUpdate(Books1), HttpStatus.CREATED);
+		}  
+		
 		//creating put mapping that updates the book detail   
-		@PutMapping("/putBooks")  
+		@PutMapping("/saveBooks")  
 		private Books update(@RequestBody Books Books1)   
 		{  
-		bookService.saveOrUpdate(Books1);  
+		BookService.saveOrUpdate(Books1);  
 		return Books1;  
 		}  
+		
+		
+	
 }
